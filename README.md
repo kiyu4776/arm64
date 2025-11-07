@@ -5,7 +5,7 @@ int32からHEXに変換してからarm64命令に変えるやつ
 AI作なのでMITライセンス
 
 ## 使い方
-`` <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script> ``
+`` <script src="[https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js](https://raw.githubusercontent.com/kiyu4776/arm64/main/js/arm-tool.js)"></script> ``
 
 
 ## サポートされてるやつ
