@@ -6,7 +6,7 @@ AI作なのでMITライセンス
 
 ## 使い方
 `` <script src="https://raw.githubusercontent.com/kiyu4776/arm64/main/js/arm-tool.js"></script> ``
-
+https://kiyu4776.github.io/arm64/
 
 ## サポートされてるやつ
 
