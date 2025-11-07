@@ -1,1 +1,5 @@
 kikikikkikikikkkikikikikikkikikikikikikikikikikikikolololololololololololp;pp;p;p;@aqswdedfrgthyhujukikolp;;
+
+
+int32からHEXに変換してからarm64命令に変えるやつ
+AI作なのでMITライセンス
