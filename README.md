@@ -5,7 +5,11 @@ int32からHEXに変換してからarm64命令に変えるやつ
 AI作なのでMITライセンス
 
 ## 使い方
-`` <script src="https://raw.githubusercontent.com/kiyu4776/arm64/main/js/arm-tool.js"></script> ``
+`` <script src="https://raw.githubusercontent.com/kiyu4776/arm64/main/js/arm-tool.js"></script> ``か
+`` <script src="https://raw.githubusercontent.com/kiyu4776/arm64/main/js/arm-tool-lite.js"></script> ``
+
+liteは改行コメントなし
+
 https://kiyu4776.github.io/arm64/
 
 ## サポートされてるやつ
