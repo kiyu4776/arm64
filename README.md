@@ -13,101 +13,148 @@ liteは改行コメントなし
 https://kiyu4776.github.io/arm64/
 
 ## サポートされてるやつ
+ざっくり説明
 
-以下がこのARM64 Instruction Toolでサポートされている命令の一覧です：
+この arm-tool-lite.js は ARM64 のごく一部の命令をデコード（Hex/Int → アセンブリ）／エンコード（アセンブリ → 32bit エンコーディング） する軽量なツールだよ。
+主な機能は次の通り：
 
-算術演算命令
-ADD (即値、シフト済みレジスタ)
+int32ToHex(value) — 32bit 整数 → 0x付き16進（ゼロ埋め）
 
-ADDS (シフト済みレジスタ)
+hexToInt32(hex) — 0x16進 → 符号付き 32bit 整数
 
-SUB (即値、シフト済みレジスタ)
+reverseBytes(value) — 32bit 値のバイト順を反転（LE/BE 切替に使う）
 
-SUBS (シフト済みレジスタ)
+decodeArm64(value, littleEndian) — 32bit の値を見て可能な限りアセンブリ文字列を返す（分からなければ 'Unknown instruction'）
 
-CMP (即値、シフト済みレジスタ) - SUBSのエイリアス
+encodeArm64(instruction, littleEndian) — サポートしているアセンブリ命令を 32bit エンコーディングに変換（対応外なら例外を投げる）
 
-論理演算命令
-AND (即値、シフト済みレジスタ)
+processInput() — HTML 上の入力欄を読むワンクリック実行用の関数（スニペットに合わせた UI を想定）
 
-ORR (シフト済みレジスタ)
+サポートされている命令（主なもの）
 
-EOR (シフト済みレジスタ)
+※完全網羅ではない。コードを見た範囲で対応している命令：
 
-データ転送命令
-MOV (ワイド即値、レジスタ)
+nop
 
-LDR (即値オフセット)
+adr / adrp
 
-STR (即値オフセット)
+ret
 
-LDP (ペアロード)
+add / adds（レジスタ操作、即値シフト付き）
 
-STP (ペアストア)
+sub / subs
 
-LDRB, LDRH, LDRSB, LDRSH (バイト/ハーフワードロード)
+mov（レジスタからレジスタ / immediate (mov #imm16 << hw)）
 
-分岐命令
-B (無条件分岐)
+ldr/str（いくつかのロード・ストアフォーマット）
 
-BL (リンク付き分岐)
+ldp/stp
 
-BR (レジスタ分岐)
+b / bl / b.cond
 
-BLR (リンク付きレジスタ分岐)
+cbz / cbnz
 
-B.cond (条件分岐)
+tbz / tbnz
 
-CBZ (ゼロ比較分岐)
+br / blr
 
-CBNZ (非ゼロ比較分岐)
+svc, hlt
 
-TBZ (ビットテストゼロ分岐)
+cmp
 
-TBNZ (ビットテスト非ゼロ分岐)
+and/orr/eor/and immediate forms（ある程度）
 
-特殊命令
-NOP (ノーオペレーション)
+lsl（左シフト immediate）
 
-RET (リターン)
+その他に「Unknown」判定するパターンもいくつかある
 
-SVC (スーパーバイザコール)
+短所：命令セットは限定的で、浮動小数点や複雑な拡張命令、SIMD、メモリのあらゆるバリエーションは未対応。完全な逆アセンブラではない点に注意してね。
 
-HLT (ハルト)
+リトルエンディアンについて
 
-アドレス計算命令
-ADR (PC相対アドレス計算)
+littleEndian を true にすると、エンコード／デコードの際に reverseBytes を適用してバイト順を反転する（つまり入力/出力が LE フォーマットのときに使う）。ARM64 の実際のメモリ表現が little-endian なら littleEndian = true を使えば OK。
 
-ADRP (PC相対ページアドレス計算)
+使い方 — すぐ試せる HTML（そのまま保存してブラウザで開ける）
 
-シフト命令
-LSL (論理左シフト)
+以下の HTML に arm-tool-lite.js を同じディレクトリに置いて使って。processInput() が既存の関数を呼び出すよ。
 
-レジスタ指定
-32ビットレジスタ: w0-w30, wsp
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>arm-tool-lite デモ</title>
+  <style>
+    body{font-family:system-ui, sans-serif; padding:16px}
+    textarea{width:100%;height:120px}
+    pre{background:#111;color:#eee;padding:12px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <h1>arm-tool-lite デモ</h1>
+  <p>数値、16進、またはアセンブリを入力して「実行」</p>
 
-64ビットレジスタ: x0-x30, sp, xzr
+  <label>入力（例: 0xd503201f /  -788462593 / mov x0, x1 / add x0, x1, x2）</label>
+  <textarea id="input">0xd503201f</textarea><br/>
 
-スタックポインタ: sp (x31), wsp (w31)
+  <label><input type="checkbox" id="littleEndian" /> 入力はリトルエンディアン（バイト反転）</label><br/>
 
-ゼロレジスタ: xzr (x31)
+  <button onclick="processInput()">実行</button>
 
-対応する命令形式
-即値演算 (12ビット即値、オプションで12ビットシフト)
+  <h3>出力</h3>
+  <pre id="output"></pre>
 
-レジスタ演算 (シフト付き、シフトなし)
+  <script src="arm-tool-lite.js"></script>
+</body>
+</html>
 
-メモリ操作 (符号なしオフセット、プレ/ポストインデックス)
+使い方例（ブラウザのコンソールで直接呼ぶ）
 
-分岐 (相対オフセット、レジスタ間接)
+スクリプトを読み込んでいれば、DevTools のコンソールで直接呼べる：
 
-条件分岐 (各種条件コード対応)
+// デコード（NOP）
+decodeArm64(0xd503201f, false)        // -> "nop"
 
-エンコーディング/デコーディング機能
-Int32 ↔ HEX ↔ ARM64命令 の相互変換
+// デコード（リトルエンディアン表現がファイルにある場合）
+decodeArm64(0xd503201f, true)         // バイトを反転して解釈（状況により使い分け）
 
-リトルエンディアン/ビッグエンディアン対応
+// エンコード
+let enc = encodeArm64('mov x0, x1', false); // -> 32bit 数値
+int32ToHex(enc)                             // -> "0x..." 表示
 
-命令のエンコード/デコード処理
+// 16進文字列を正しく符号付き int にする
+hexToInt32('0xd503201f')  // -> 符号付き整数に変換
 
-このツールはARM64アセンブリの学習、デバッグ、リバースエンジニアリングに役立つように設計されています。主要なARM64命令の大部分をカバーしており、実用的な使用が可能です。
+
+注意：encodeArm64 はサポートしてない命令を投げる（例外）ので try/catch で扱ってね。
+
+Node.js で使いたい場合
+
+このスクリプトはモジュール化されていない（グローバル関数を想定）。手早く Node で使うなら少しだけラップするか、単に HTML とブラウザで試すのが手っ取り早い。もし Node 用に変換してほしければ、私が module.exports でラップしたバージョンを作るから言って。
+
+出力例（具体的）
+
+入力：0xd503201f → decode → nop
+
+入力：mov x0, x1 → encode → 例: 0xaa0103e0（例は仮。実際は int32ToHex(encodeArm64(...)) で確認）
+
+入力：add x0, x1, x2 → encode → 32bit value、int32ToHex で16進表示
+
+（実数値はその場で実行すると確実。ここで示したのは概念的な例。）
+
+注意点（安全性と信頼性）
+
+このスニペットは 教育・補助目的の軽量ツール。完全なディスアセンブルや全命令サポートは期待しないで。
+
+正確さ：多くの命令に対してビットチェックをしているが、未対応命令は 'Unknown instruction' や例外になる。
+
+実機でバイナリを書き換えるなど危険な操作をする前に、出力が本当に正しいか別のツール（objdump、capstone、radare2 など）で検証することを強く勧める。
+
+次に何が欲しい？
+
+このまま ブラウザUI を整えたHTMLファイル を作る？（出力整形／バイト表示などを追加）
+
+ある具体的な HEX（例：0xXXXXXXXX）をこれでデコードしてほしい？ → ここに貼ってくれれば即解析する。
+
+Node 用に モジュール化 してコマンドラインで encode/decode できるようにする？
+
+やりたいことを教えて。分からない点は「分からない」と正直に言うので、気軽にどうぞ。
