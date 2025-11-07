@@ -3,6 +3,11 @@ kikikikkikikikkkikikikikikkikikikikikikikikikikikikolololololololololololp;pp;p;
 
 int32からHEXに変換してからarm64命令に変えるやつ
 AI作なのでMITライセンス
+
+## 使い方
+`` <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script> ``
+
+
 サポートされてるやつ
 以下がこのARM64 Instruction Toolでサポートされている命令の一覧です：
 
